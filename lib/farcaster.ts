@@ -9,10 +9,10 @@ const ID_REGISTRY_CONTRACT_ADDRESS: `0x${string}` =
 const ZERO_ADDRESS: `0x${string}` =
   "0x0000000000000000000000000000000000000000";
 const HUB_URL = "nemes.farcaster.xyz:2283";
-
+const image1 = "";
 //create images for our frames (using privy's image as placeholder)
 export enum FrameImageUrls {
-  START = "https://privy-frames-demo.vercel.app/landing.png",
+  START = `${process.env.NEXT_PUBLIC_GATEWAY}/ipfs/QmcgTSkKvCWPbv1V2qxmzbwrR1G7i238wkUxg7TiE2FfAb?pinataGatewayToken=${process.env.NEXT_PUBLIC_PINATA_TOKEN}` as unknown as number,
   WALLET = "https://privy-frames-demo.vercel.app/wallet.png",
   SUCCESS = "https://privy-frames-demo.vercel.app/success.png",
   ERROR = "https://privy-frames-demo.vercel.app/error.png",

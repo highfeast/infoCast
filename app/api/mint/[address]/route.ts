@@ -32,6 +32,12 @@ export async function POST(req: NextRequest): Promise<Response> {
 
   //pass image here
 
+  //check if a user is curently an NFT holder
+  //if the user isn't, then it's time for us to mint for the user
+
+  // we'll do the checking on the wallet place,
+  // if the user holds a mint, then we'll direct the user immediately to message
+
   return new NextResponse(
     chatFrame("https://privy-frames-demo.vercel.app/wallet.png")
   );

@@ -5,7 +5,7 @@ import RedirectToDemo from "@/components/redirect";
 
 const frameMetadata = getFrameMetadata({
   buttons: [{ label: "Let's Chat" }],
-  image: FrameImageUrls.START,
+  image: FrameImageUrls.START as string,
   post_url: `${FRAME_BASE_URL}/api/wallet`,
 });
 
@@ -15,7 +15,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "InfoCast Frames",
     description: "InfoCast Frames",
-    images: [FrameImageUrls.START],
+    images: [FrameImageUrls.START as string],
   },
   other: {
     ...frameMetadata,
