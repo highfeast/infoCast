@@ -1,4 +1,4 @@
-import { getFrameMetadata } from "@coinbase/onchainkit";
+import { getFrameMessage, getFrameMetadata } from "@coinbase/onchainkit";
 import type { Metadata } from "next";
 import { FrameImageUrls, FRAME_BASE_URL } from "../lib/farcaster";
 import RedirectToDemo from "@/components/redirect";

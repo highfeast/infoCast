@@ -22,7 +22,8 @@ export const createFrame = (
   imageUrl: string,
   buttonText: string,
   apiPath: string,
-  isRedirect = false
+  isRedirect = false,
+  isChat = false
 ) => {
   return `
         <!DOCTYPE html>
@@ -31,10 +32,19 @@ export const createFrame = (
             <meta name="fc:frame" content="vNext">
             <meta name="fc:frame:image" content="${imageUrl}">
             <meta name="fc:frame:post_url" content="${FRAME_BASE_URL}/${apiPath}">
-            <meta name="fc:frame:button:1" content="${buttonText}">
-            <meta name="fc:frame:button:1:action" content="${
-              isRedirect ? "post_redirect" : "post"
-            }">
+            ${isChat && "<meta name='fc:frame:button:1', content='⬅️'>"}
+            ${isChat && "<meta name='fc:frame:button:2', content='➡️'>"}
+            <meta name="fc:frame:button:${
+              isChat ? "3" : "1"
+            }" content="${buttonText}">
+            ${
+              isChat &&
+              "<meta name='fc:frame:input:text', content='Type something here'>"
+            }       
+            <meta name="fc:frame:button:${
+              !isChat ? "1" : "3"
+            }:action" content="${isRedirect ? "post_redirect" : "post"}">
+          
             </head>
         </html>`;
 };
@@ -46,6 +56,9 @@ export const createWalletFrame = (address: string) => {
     `api/mint/${address}`
   );
 };
+
+export const chatFrame = (image: string) =>
+  createFrame(image, "Send", "api/done", true, true);
 
 export const successFrame = createFrame(
   FrameImageUrls.SUCCESS,

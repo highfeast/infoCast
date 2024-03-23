@@ -3,6 +3,7 @@ import {
   parseFrameRequest,
   getOwnerAddressFromFid,
   successFrame,
+  chatFrame,
 } from "@/lib/farcaster";
 import { FrameRequest } from "@coinbase/onchainkit";
 import { NextRequest, NextResponse } from "next/server";
@@ -26,10 +27,14 @@ export async function POST(req: NextRequest): Promise<Response> {
   if (typeof address !== "string") return new NextResponse(errorFrame);
 
   // Airdrop NFT to the user's wallet
-  const tx = await airdropTo(address as `0x${string}`);
-  if (!tx) return new NextResponse(errorFrame);
+  // const tx = await airdropTo(address as `0x${string}`);
+  // if (!tx) return new NextResponse(errorFrame);
 
-  return new NextResponse(successFrame);
+  //pass image here
+
+  return new NextResponse(
+    chatFrame("https://privy-frames-demo.vercel.app/wallet.png")
+  );
 }
 
 export const dynamic = "force-dynamic";
