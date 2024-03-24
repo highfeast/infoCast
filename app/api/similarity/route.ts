@@ -1,4 +1,4 @@
-import { measuringUnits } from '../../../lib/helpers';
+import { measuringUnits, similarityVectorSearch } from '../../../lib/helpers';
 import { AIMessage, HumanMessage } from '@langchain/core/messages';
 import { Pinecone } from '@pinecone-database/pinecone';
 import { Document } from 'langchain/document';
@@ -73,31 +73,3 @@ export async function POST(req: any, res: any) {
   }
 }
 
-export async function similarityVectorSearch(
-  pinecone: any,
-  vectorQuery: number[],
-  k = 1,
-  indexx: any,
-  namespace: string
-): Promise<Document[]> {
-  const index = pinecone.index('highfeast1');
-  const results = await index.query({
-    vector: vectorQuery,
-    topK: k,
-    includeMetadata: true,
-  });
-
-  const result: [Document, number][] = [];
-
-  if (results.matches) {
-    for (const res of results.matches) {
-      const { text: pageContent, ...metadata } =
-        res?.metadata as PineConeMetadata;
-      if (res.score) {
-        //@ts-ignore
-        result.push([new Document({ metadata, pageContent }), res.score]);
-      }
-    }
-  }
-  return result.map((result) => result[0]);
-}

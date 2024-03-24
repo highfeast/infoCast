@@ -3,11 +3,8 @@ import { createWalletClient, http } from 'viem';
 import { privateKeyToAccount } from 'viem/accounts';
 import { sepolia } from 'viem/chains';
 import siwe from 'siwe';
-import { createCanvas, loadImage } from 'canvas';
 import htmlToImage from 'html-to-image';
-import fs from 'fs';
-import sharp from 'sharp';
-import { Readable } from 'stream';
+import { PineConeMetadata } from './LLM';
 
 export const extractTableData = (htmlString: string) => {
   const menuItems = [];
@@ -129,39 +126,32 @@ export const getAuthSig = async () => {
 
   return authSig;
 };
-export async function textToImage(text: string) {
-  const htmlContent = `
-      <!DOCTYPE html>
-      <html lang="en">
-      <head>
-          <meta charset="UTF-8">
-          <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          <title>Text Bubble</title>
-          <style>
-              body {
-                  font-family: Arial, sans-serif;
-                  background-color: transparent;
-                  padding: 20px;
-              }
-              .text-bubble {
-                  background-color: #f0f0f0;
-                  border-radius: 20px;
-                  padding: 20px;
-                  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-                  max-width: 400px;
-                  margin: 0 auto;
-              }
-          </style>
-      </head>
-      <body>
-          <div class="text-bubble">${text}</div>
-      </body>
-      </html>
-  `;
 
-  const dataUrl = await htmlToImage.toPng(htmlContent as any);
+export async function similarityVectorSearch(
+  pinecone: any,
+  vectorQuery: number[],
+  k = 1,
+  indexx: any,
+  namespace: string
+): Promise<Document[]> {
+  const index = pinecone.index('highfeast1');
+  const results = await index.query({
+    vector: vectorQuery,
+    topK: k,
+    includeMetadata: true,
+  });
 
-  const base64Data = dataUrl.replace(/^data:image\/png;base64,/, '');
+  const result: [Document, number][] = [];
 
-  return Buffer.from(base64Data, 'base64');
+  if (results.matches) {
+    for (const res of results.matches) {
+      const { text: pageContent, ...metadata } =
+        res?.metadata as PineConeMetadata;
+      if (res.score) {
+        //@ts-ignore
+        result.push([new Document({ metadata, pageContent }), res.score]);
+      }
+    }
+  }
+  return result.map((result) => result[0]);
 }

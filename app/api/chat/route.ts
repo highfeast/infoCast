@@ -16,8 +16,7 @@ import { createRobotPost } from '@/composedb/utils/ceramic';
 import { Readable } from 'stream';
 import { FrameRequest } from '@coinbase/onchainkit';
 import { chatFrame, errorFrame, parseRequest } from '@/lib/farcaster';
-import { textToImage } from '@/lib/helpers';
-import { createCanvas, loadImage } from 'canvas';
+
 
 const pinata = new pinataSDK({ pinataJWTKey: process.env.PINATA_JWT });
 
