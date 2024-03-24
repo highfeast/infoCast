@@ -134,7 +134,7 @@ export const createRobotPost = async (
       await staticDid.authenticate();
       compose.setDID(staticDid);
       ceramic.did = staticDid;
-      const url = 'http://localhost:3000/api/db-context';
+      const url = `${process.env.NEXT_PUBLIC_BASE_URL}/api/db-context`;
 
       axios
         .get(url)

@@ -21,7 +21,7 @@ const robotDidParentFilePath = path.join(
   'composedb/data',
   'robotdid.txt'
 );
-const ContextUrl = 'http://localhost:3000/api/db-context';
+const ContextUrl = `${process.env.NEXT_PUBLIC_BASE_URL}/api/db-context`;
 
 export async function GET(req: any, res: any) {
   let session;

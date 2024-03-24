@@ -44,7 +44,7 @@ export async function GET(req: any, res: any) {
 
     if (sessionStat.size === 0) {
       axios
-        .post('http://localhost:3000/api/connect-db', {})
+        .post(`${process.env.NEXT_PUBLIC_BASE_URL}/api/connect-d`, {})
         .then(async (response) => {
           if (response.status === 200) {
             const { account } = response.data;
@@ -112,7 +112,7 @@ export async function POST(req: any, res: any) {
 
     if (sessionStat.size === 0) {
       axios
-        .post('http://localhost:3000/api/connect-db', {})
+        .post(`${process.env.NEXT_PUBLIC_BASE_URL}/api/connect-db`, {})
         .then(async (response) => {
           if (response.status === 200) {
             const { account } = response.data;

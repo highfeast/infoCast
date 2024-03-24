@@ -40,7 +40,7 @@ export async function POST(req: any, res: any) {
   }
   const payload = await parseRequest(frameRequest);
 
-  const url = 'http://localhost:3000/api/history';
+  const url = `${process.env.NEXT_PUBLIC_BASE_URL}/api/history`;
 
   await axios
     .get(url)
