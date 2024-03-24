@@ -1,35 +1,47 @@
+import { NextResponse } from "next/server";
 import { callVectorDBQAChain } from "../../../lib/LLM";
 import { Pinecone } from "@pinecone-database/pinecone";
-import type { NextApiRequest, NextApiResponse } from "next";
 
-type Data = {
-  message: string;
-};
-
-export async function POST(req: NextApiRequest, res: NextApiResponse<Data>) {
+export async function POST(req: any, res: any) {
   const pinecone = new Pinecone({
     apiKey: process.env.PINECONE_API_KEY as string,
   });
 
-  const query = req.body.prompt;
-  const messages = req.body.messages;
+  //find a way to package the messages in an acceptable form
+  const { prompt, messages } = await req.json();
 
-  if (!query) {
-    return res.status(500).json({ message: "prompt format error" });
+  if (!prompt) {
+    return NextResponse.json(
+      { message: "mrompt format erro" },
+      { status: 500 }
+    );
   }
 
   if (!messages || !Array.isArray(messages)) {
-    return res.status(400).json({ message: "messages format error" });
+    return NextResponse.json(
+      { message: "messages format error" },
+      { status: 400 }
+    );
   }
 
   const pineconeIndex = pinecone.index("highfeast1");
 
   const response = await callVectorDBQAChain(
-    query,
+    prompt,
     await pineconeIndex.describeIndexStats(),
     "c",
     messages
   );
 
-  res.status(200).json({ message: response });
+  if (response) {
+    console.log("result", response);
+
+    //ideally once there's a result - create a post with that result
+
+    //show response in svg and text. Upload response into composeDB
+
+
+
+    return NextResponse.json({ message: response }, { status: 200 });
+  }
 }
