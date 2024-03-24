@@ -1,8 +1,8 @@
-import { errorFrame, parseFrameRequest, chatFrame } from "@/lib/farcaster";
-import { FrameRequest } from "@coinbase/onchainkit";
-import { NextRequest, NextResponse } from "next/server";
-import stream from "stream";
-import chatNFTClient from "../../../../lib/NFTRPC";
+import { errorFrame, parseFrameRequest, chatFrame } from '@/lib/farcaster';
+import { FrameRequest } from '@coinbase/onchainkit';
+import { NextRequest, NextResponse } from 'next/server';
+import stream from 'stream';
+import chatNFTClient from '../../../../lib/NFTRPC';
 
 export async function POST(req: NextRequest): Promise<Response> {
   let frameRequest: FrameRequest | undefined;
@@ -10,7 +10,7 @@ export async function POST(req: NextRequest): Promise<Response> {
   try {
     frameRequest = await req.json();
     if (!frameRequest)
-      throw new Error("Could not deserialize request from frame");
+      throw new Error('Could not deserialize request from frame');
   } catch (e) {
     return new NextResponse(errorFrame);
   }
@@ -18,8 +18,8 @@ export async function POST(req: NextRequest): Promise<Response> {
   const { fid, isValid } = await parseFrameRequest(frameRequest);
   if (!fid || !isValid) return new NextResponse(errorFrame);
 
-  const address = req.url.split("/").slice(-1)[0];
-  if (typeof address !== "string") return new NextResponse(errorFrame);
+  const address = req.url.split('/').slice(-1)[0];
+  if (typeof address !== 'string') return new NextResponse(errorFrame);
 
   const _chatNFTClient = new chatNFTClient();
   const tx = await _chatNFTClient.mintAndAssignConversationId(address);
@@ -27,7 +27,7 @@ export async function POST(req: NextRequest): Promise<Response> {
     return new NextResponse(errorFrame);
   }
 
-  const text = "Hi, how may I help you?";
+  const text = 'Hi, how may I help you?';
 
   const svgContent = `
                     <svg xmlns="http://www.w3.org/2000/svg" width="400" height="200">
@@ -43,4 +43,4 @@ export async function POST(req: NextRequest): Promise<Response> {
   return new NextResponse(chatFrame(welcomeImage as any));
 }
 
-export const dynamic = "force-dynamic";
+export const dynamic = 'force-dynamic';

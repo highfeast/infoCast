@@ -1,33 +1,33 @@
-import fs from "fs";
-import path from "path";
-import axios from "axios";
-import { DIDSession } from "did-session";
-import { ComposeClient } from "@composedb/client";
-import { CeramicClient } from "@ceramicnetwork/http-client";
-import { definition } from "../../../lib/__generated__/definition";
-import { RuntimeCompositeDefinition } from "@composedb/types";
-import { PostProps } from "../../../composedb/utils/types";
-import { GetRecentMessagesQuery } from "../../../composedb/utils/data.utils";
-import { NextRequest, NextResponse } from "next/server";
+import fs from 'fs';
+import path from 'path';
+import axios from 'axios';
+import { DIDSession } from 'did-session';
+import { ComposeClient } from '@composedb/client';
+import { CeramicClient } from '@ceramicnetwork/http-client';
+import { definition } from '../../../lib/__generated__/definition';
+import { RuntimeCompositeDefinition } from '@composedb/types';
+import { PostProps } from '../../../composedb/utils/types';
+import { GetRecentMessagesQuery } from '../../../composedb/utils/data.utils';
+import { NextRequest, NextResponse } from 'next/server';
 
 const sessionFilePath = path.join(
   process.cwd(),
-  "composedb/data",
-  "session.json"
+  'composedb/data',
+  'session.json'
 );
-const didParentFilePath = path.join(process.cwd(), "composedb/data", "did.txt");
+const didParentFilePath = path.join(process.cwd(), 'composedb/data', 'did.txt');
 const robotDidParentFilePath = path.join(
   process.cwd(),
-  "composedb/data",
-  "robotdid.txt"
+  'composedb/data',
+  'robotdid.txt'
 );
-const ContextUrl = "http://localhost:3000/api/db-context";
+const ContextUrl = 'http://localhost:3000/api/db-context';
 
 export async function GET(req: any, res: any) {
   let session;
   try {
     const compose = new ComposeClient({
-      ceramic: "http://localhost:7007/",
+      ceramic: 'http://localhost:7007/',
       //@ts-ignore
       definition: definition as RuntimeCompositeDefinition,
     });
@@ -36,21 +36,21 @@ export async function GET(req: any, res: any) {
 
     if (sessionStat.size === 0) {
       console.log("it's zero?");
-      return NextResponse.json({ error: "Invalid Session" }, { status: 500 });
+      return NextResponse.json({ error: 'Invalid Session' }, { status: 500 });
     }
 
-    const sessionData = fs.readFileSync(sessionFilePath, "utf8");
+    const sessionData = fs.readFileSync(sessionFilePath, 'utf8');
     session = await DIDSession.fromSession(sessionData);
 
     if (session) {
       console.log(await DIDSession.fromSession(sessionData));
     }
-    const authorId = fs.readFileSync(didParentFilePath, "utf8");
-    const robotId = fs.readFileSync(robotDidParentFilePath, "utf8");
+    const authorId = fs.readFileSync(didParentFilePath, 'utf8');
+    const robotId = fs.readFileSync(robotDidParentFilePath, 'utf8');
     const messages = await GetRecentMessagesQuery(compose, authorId, robotId);
     if (messages === null) {
       return NextResponse.json(
-        { error: "messages not found" },
+        { error: 'messages not found' },
         { status: 404 }
       );
     }
@@ -63,7 +63,7 @@ export async function GET(req: any, res: any) {
   } catch (err) {
     console.error(err);
     return NextResponse.json(
-      { error: "Internals Server Error" },
+      { error: 'Internals Server Error' },
       {
         status: 500,
       }
@@ -78,13 +78,13 @@ export async function POST(req: any, res: any) {
   if (!message) {
     return res
       .status(400)
-      .json({ error: "Missing required fields or context" });
+      .json({ error: 'Missing required fields or context' });
   }
 
   try {
-    const ceramic = new CeramicClient("http://localhost:7007/");
+    const ceramic = new CeramicClient('http://localhost:7007/');
     const compose = new ComposeClient({
-      ceramic: "http://localhost:7007/",
+      ceramic: 'http://localhost:7007/',
       //@ts-ignore
       definition: definition as RuntimeCompositeDefinition,
     });
@@ -95,9 +95,9 @@ export async function POST(req: any, res: any) {
     const sessionStat = fs.statSync(sessionFilePath);
 
     if (sessionStat.size === 0) {
-      return NextResponse.json({ error: "Invalid Session" }, { status: 500 });
+      return NextResponse.json({ error: 'Invalid Session' }, { status: 500 });
     } else {
-      const sessionData = fs.readFileSync(sessionFilePath, "utf8");
+      const sessionData = fs.readFileSync(sessionFilePath, 'utf8');
       session = await DIDSession.fromSession(sessionData);
     }
 
@@ -106,7 +106,7 @@ export async function POST(req: any, res: any) {
       //@ts-ignore
       ceramic.did = session.did;
     } else {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     return axios
@@ -162,11 +162,11 @@ export async function POST(req: any, res: any) {
         });
       })
       .catch((error) => {
-        console.error("Error:", error);
+        console.error('Error:', error);
       });
   } catch (err) {
     return NextResponse.json(
-      { error: "Internal Server Error" },
+      { error: 'Internal Server Error' },
       {
         status: 500,
       }

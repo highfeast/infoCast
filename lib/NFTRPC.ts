@@ -4,19 +4,19 @@ import {
   http,
   encodeFunctionData,
   getAddress,
-} from "viem";
-import { privateKeyToAccount } from "viem/accounts";
-import type { Account } from "viem/accounts";
-import CHAT_NFT_ABI from "./abi.json";
-import { sepolia } from "viem/chains";
-import { NextResponse } from "next/server";
-import { errorFrame } from "./farcaster";
+} from 'viem';
+import { privateKeyToAccount } from 'viem/accounts';
+import type { Account } from 'viem/accounts';
+import CHAT_NFT_ABI from './abi.json';
+import { sepolia } from 'viem/chains';
+import { NextResponse } from 'next/server';
+import { errorFrame } from './farcaster';
 
 export default class ChatNFTClient {
   static mintAndAssignConversationId(
     recipient: any
   ): Response | PromiseLike<Response> {
-    throw new Error("Method not implemented.");
+    throw new Error('Method not implemented.');
   }
   private account: Account | null = null;
   private walletClient: ReturnType<typeof createWalletClient> | null = null;
@@ -46,11 +46,11 @@ export default class ChatNFTClient {
   public async mintAndAssignConversationId(userAddress: string) {
     await this.init();
     if (!this.walletClient) {
-      throw new Error("Wallet client not initialized");
+      throw new Error('Wallet client not initialized');
     }
     const mintData = encodeFunctionData({
       abi: CHAT_NFT_ABI,
-      functionName: "mintAndAssignConversationId",
+      functionName: 'mintAndAssignConversationId',
       args: [userAddress],
     });
 
@@ -60,7 +60,7 @@ export default class ChatNFTClient {
       account: this.account!,
       chain: sepolia,
     });
-    console.log("Transaction hash:", tx);
+    console.log('Transaction hash:', tx);
     if (!tx) {
       return new NextResponse(errorFrame);
     }
@@ -69,19 +69,19 @@ export default class ChatNFTClient {
 
   public async getUserConversationId(userAddress: string) {
     if (!this.publicClient) {
-      throw new Error("Public client not initialized");
+      throw new Error('Public client not initialized');
     }
 
     const conversationIdData = encodeFunctionData({
       abi: CHAT_NFT_ABI,
-      functionName: "getUserConversationId",
+      functionName: 'getUserConversationId',
       args: [userAddress],
     });
 
     const conversationId = await this.publicClient.readContract({
       address: getAddress(process.env.NFT_CONTRACT_ADDRESS as string),
       abi: CHAT_NFT_ABI,
-      functionName: "getUserConversationId",
+      functionName: 'getUserConversationId',
       args: [userAddress],
     });
 

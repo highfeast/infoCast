@@ -1,4 +1,4 @@
-import { Profile } from "./types";
+import { Profile } from './types';
 
 export const updateContext = async (
   context: string,
@@ -8,7 +8,7 @@ export const updateContext = async (
   const updateResult = await compose.executeQuery(`
     mutation {
       createContext(input: { content: { context: "${
-        context || ""
+        context || ''
       }" authorId: "${authorId}" } }) {
         document {
           id
@@ -63,7 +63,6 @@ export const getBasicProfile = async (compose: any) => {
     }
   `);
 };
-
 
 export const followSelf = async (profileId: string, compose: any) => {
   return await compose.executeQuery(`

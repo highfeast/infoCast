@@ -1,17 +1,17 @@
-import { measuringUnits } from "../../../lib/helpers";
-import { AIMessage, HumanMessage } from "@langchain/core/messages";
-import { Pinecone } from "@pinecone-database/pinecone";
-import { Document } from "langchain/document";
-import { OpenAIEmbeddings } from "langchain/embeddings/openai";
-import { OpenAI } from "langchain/llms/openai";
-import { NextApiRequest, NextApiResponse } from "next";
+import { measuringUnits } from '../../../lib/helpers';
+import { AIMessage, HumanMessage } from '@langchain/core/messages';
+import { Pinecone } from '@pinecone-database/pinecone';
+import { Document } from 'langchain/document';
+import { OpenAIEmbeddings } from 'langchain/embeddings/openai';
+import { OpenAI } from 'langchain/llms/openai';
+import { NextApiRequest, NextApiResponse } from 'next';
 import {
   embedQuery,
   PineConeMetadata,
   prompt,
   // similarityVectorSearch,
-} from "../../../lib/LLM";
-import { NextResponse } from "next/server";
+} from '../../../lib/LLM';
+import { NextResponse } from 'next/server';
 
 const pineconeApiKey = process.env.PINECONE_API_KEY;
 const openAIApiKey = process.env.OPENAI_API_KEY;
@@ -47,12 +47,12 @@ export async function POST(req: any, res: any) {
 
     if (messages.length > 0) {
       messages.forEach((message: any, index: number) => {
-          if ("human_message" in message) {
-            mappedMessages.push(new HumanMessage(message.human_message));
-          }
-          if ("ai_message" in message) {
-            mappedMessages.push(new AIMessage(message.ai_message));
-          }
+        if ('human_message' in message) {
+          mappedMessages.push(new HumanMessage(message.human_message));
+        }
+        if ('ai_message' in message) {
+          mappedMessages.push(new AIMessage(message.ai_message));
+        }
       });
     }
     mappedMessages.push(new HumanMessage(body.query));
@@ -80,7 +80,7 @@ export async function similarityVectorSearch(
   indexx: any,
   namespace: string
 ): Promise<Document[]> {
-  const index = pinecone.index("highfeast1");
+  const index = pinecone.index('highfeast1');
   const results = await index.query({
     vector: vectorQuery,
     topK: k,

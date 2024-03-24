@@ -12,7 +12,7 @@ export async function fetcher<JSON = any>(
       error.status = res.status;
       throw error;
     } else {
-      throw new Error("An unexpected error occurred");
+      throw new Error('An unexpected error occurred');
     }
   }
   return res.json();
@@ -20,15 +20,15 @@ export async function fetcher<JSON = any>(
 
 export function formatDate(input: string | number | Date): string {
   const date = new Date(input);
-  return date.toLocaleDateString("en-US", {
-    month: "long",
-    day: "numeric",
-    year: "numeric",
+  return date.toLocaleDateString('en-US', {
+    month: 'long',
+    day: 'numeric',
+    year: 'numeric',
   });
 }
 
 export const removePrefix = (response: any) => {
-  const index = response.indexOf(":");
+  const index = response.indexOf(':');
   if (index !== -1) {
     return response.substring(index + 1).trim();
   } else {

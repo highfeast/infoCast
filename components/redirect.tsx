@@ -1,8 +1,8 @@
-"use client";
-import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+'use client';
+import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
 
-const PRIVY_AUTH_DEMO_URL = "";
+const PRIVY_AUTH_DEMO_URL = '';
 
 export default function RedirectToDemo() {
   const router = useRouter();

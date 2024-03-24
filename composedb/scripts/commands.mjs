@@ -1,10 +1,10 @@
-import KeyDIDResolver from "key-did-resolver";
-import { randomBytes } from "crypto";
-import { toString } from "uint8arrays/to-string";
-import { writeFile } from "fs";
-import { DID } from "dids";
-import { Ed25519Provider } from "key-did-provider-ed25519";
-import { homedir } from "os";
+import KeyDIDResolver from 'key-did-resolver';
+import { randomBytes } from 'crypto';
+import { toString } from 'uint8arrays/to-string';
+import { writeFile } from 'fs';
+import { DID } from 'dids';
+import { Ed25519Provider } from 'key-did-provider-ed25519';
+import { homedir } from 'os';
 
 export const RunCommands = async () => {
   const generateAdminKeyDid = async () => {
@@ -18,39 +18,39 @@ export const RunCommands = async () => {
     });
     await did.authenticate();
     return {
-      seed: toString(seed, "base16"),
+      seed: toString(seed, 'base16'),
       did,
     };
   };
   const generateLocalConfig = async (adminSeed, adminDid) => {
     const configData = {
       anchor: {},
-      "http-api": {
-        "cors-allowed-origins": [".*"],
-        "admin-dids": [adminDid.id],
+      'http-api': {
+        'cors-allowed-origins': ['.*'],
+        'admin-dids': [adminDid.id],
       },
       ipfs: {
-        mode: "bundled",
+        mode: 'bundled',
       },
       logger: {
-        "log-level": 2,
-        "log-to-files": false,
+        'log-level': 2,
+        'log-to-files': false,
       },
       metrics: {
-        "metrics-exporter-enabled": false,
-        "metrics-port": 9090,
+        'metrics-exporter-enabled': false,
+        'metrics-port': 9090,
       },
       network: {
-        name: "inmemory",
+        name: 'inmemory',
       },
       node: {},
-      "state-store": {
-        mode: "fs",
-        "local-directory": `${process.cwd()}/.ceramic/.ceramic/statestore/`,
+      'state-store': {
+        mode: 'fs',
+        'local-directory': `${process.cwd()}/.ceramic/.ceramic/statestore/`,
       },
       indexing: {
         db: `sqlite://${process.cwd()}/.ceramic/indexing.sqlite`,
-        "allow-queries-before-historical-sync": true,
+        'allow-queries-before-historical-sync': true,
         models: [],
       },
     };

@@ -50,8 +50,9 @@ For more information, check our build page [EthGlobal Frameworks Hackathon](http
 
 - [@Acgodson]()
 
-
 ---
+
 ## ToDos
+
 - Host db,frames on ICP
 - Create clientside for multiple context uploads

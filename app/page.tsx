@@ -1,7 +1,7 @@
-import { getFrameMessage, getFrameMetadata } from "@coinbase/onchainkit";
-import type { Metadata } from "next";
-import { FrameImageUrls, FRAME_BASE_URL } from "../lib/farcaster";
-import RedirectToDemo from "@/components/redirect";
+import { getFrameMessage, getFrameMetadata } from '@coinbase/onchainkit';
+import type { Metadata } from 'next';
+import { FrameImageUrls, FRAME_BASE_URL } from '../lib/farcaster';
+import RedirectToDemo from '@/components/redirect';
 
 const frameMetadata = getFrameMetadata({
   buttons: [{ label: "Let's Chat" }],
@@ -9,16 +9,14 @@ const frameMetadata = getFrameMetadata({
   post_url: `${FRAME_BASE_URL}/api/wallet`,
 });
 
-
-const  campanyName = ''
-
+const campanyName = '';
 
 export const metadata: Metadata = {
-  title: "InfoCast Frames",
-  description: "InfoCast Frame",
+  title: 'InfoCast Frames',
+  description: 'InfoCast Frame',
   openGraph: {
-    title: "InfoCast Frames",
-    description: "InfoCast Frames",
+    title: 'InfoCast Frames',
+    description: 'InfoCast Frames',
     images: [FrameImageUrls.START as string],
   },
   other: {

@@ -1,18 +1,18 @@
-import { readFileSync } from "fs";
-import { CeramicClient } from "@ceramicnetwork/http-client";
+import { readFileSync } from 'fs';
+import { CeramicClient } from '@ceramicnetwork/http-client';
 import {
   createComposite,
   readEncodedComposite,
   writeEncodedComposite,
   writeEncodedCompositeRuntime,
-} from "@composedb/devtools-node";
-import { Composite } from "@composedb/devtools";
-import { DID } from "dids";
-import { Ed25519Provider } from "key-did-provider-ed25519";
-import { getResolver } from "key-did-resolver";
-import { fromString } from "uint8arrays/from-string";
+} from '@composedb/devtools-node';
+import { Composite } from '@composedb/devtools';
+import { DID } from 'dids';
+import { Ed25519Provider } from 'key-did-provider-ed25519';
+import { getResolver } from 'key-did-resolver';
+import { fromString } from 'uint8arrays/from-string';
 
-const ceramic = new CeramicClient("http://localhost:7007");
+const ceramic = new CeramicClient('http://localhost:7007');
 
 /**
  * @param {Ora} spinner - to provide progress status.
@@ -20,16 +20,16 @@ const ceramic = new CeramicClient("http://localhost:7007");
  */
 export const writeComposite = async (spinner) => {
   await authenticate();
-  spinner.info("writing composite to Ceramic");
+  spinner.info('writing composite to Ceramic');
 
   const profileComposite = await createComposite(
     ceramic,
-    "./composedb/composites/00-basicProfile.graphql"
+    './composedb/composites/00-basicProfile.graphql'
   );
 
-  const postsSchema = readFileSync("./composedb/composites/01-posts.graphql", {
-    encoding: "utf-8",
-  }).replace("$PROFILE_ID", profileComposite.modelIDs[0]);
+  const postsSchema = readFileSync('./composedb/composites/01-posts.graphql', {
+    encoding: 'utf-8',
+  }).replace('$PROFILE_ID', profileComposite.modelIDs[0]);
 
   const postsComposite = await Composite.create({
     ceramic,
@@ -38,12 +38,15 @@ export const writeComposite = async (spinner) => {
 
   const contextComposite = await createComposite(
     ceramic,
-    "./composedb/composites/02-context.graphql"
+    './composedb/composites/02-context.graphql'
   );
 
-  const followingSchema = readFileSync("./composedb/composites/03-following.graphql", {
-    encoding: "utf-8",
-  }).replace("$PROFILE_ID", profileComposite.modelIDs[0]);
+  const followingSchema = readFileSync(
+    './composedb/composites/03-following.graphql',
+    {
+      encoding: 'utf-8',
+    }
+  ).replace('$PROFILE_ID', profileComposite.modelIDs[0]);
 
   const followingComposite = await Composite.create({
     ceramic,
@@ -51,13 +54,13 @@ export const writeComposite = async (spinner) => {
   });
 
   const postProfileSchema = readFileSync(
-    "./composedb/composites/04-postsProfile.graphql",
+    './composedb/composites/04-postsProfile.graphql',
     {
-      encoding: "utf-8",
+      encoding: 'utf-8',
     }
   )
-    .replace("$POSTS_ID", postsComposite.modelIDs[1])
-    .replace("$PROFILE_ID", profileComposite.modelIDs[0]);
+    .replace('$POSTS_ID', postsComposite.modelIDs[1])
+    .replace('$PROFILE_ID', profileComposite.modelIDs[0]);
 
   const postsProfileComposite = await Composite.create({
     ceramic,
@@ -72,21 +75,21 @@ export const writeComposite = async (spinner) => {
     contextComposite,
   ]);
 
-  await writeEncodedComposite(composite, "./lib/__generated__/definition.json");
-  spinner.info("creating composite for runtime usage");
+  await writeEncodedComposite(composite, './lib/__generated__/definition.json');
+  spinner.info('creating composite for runtime usage');
   await writeEncodedCompositeRuntime(
     ceramic,
-    "./lib/__generated__/definition.json",
-    "./lib/__generated__/definition.js"
+    './lib/__generated__/definition.json',
+    './lib/__generated__/definition.js'
   );
-  spinner.info("deploying composite");
+  spinner.info('deploying composite');
   const deployComposite = await readEncodedComposite(
     ceramic,
-    "./lib/__generated__/definition.json"
+    './lib/__generated__/definition.json'
   );
 
   await deployComposite.startIndexingOn(ceramic);
-  spinner.succeed("composite deployed & ready for use");
+  spinner.succeed('composite deployed & ready for use');
 };
 
 /**
@@ -94,8 +97,8 @@ export const writeComposite = async (spinner) => {
  * @return {Promise<void>} - return void when DID is authenticated.
  */
 const authenticate = async () => {
-  const seed = readFileSync("./composedb/admin_seed.txt");
-  const key = fromString(seed, "base16");
+  const seed = readFileSync('./composedb/admin_seed.txt');
+  const key = fromString(seed, 'base16');
   const did = new DID({
     resolver: getResolver(),
     provider: new Ed25519Provider(key),

@@ -1,11 +1,10 @@
 import {
   ChatPromptTemplate,
   MessagesPlaceholder,
-} from "@langchain/core/prompts";
-import { Pinecone } from "@pinecone-database/pinecone";
-import { OpenAIEmbeddings } from "langchain/embeddings/openai";
+} from '@langchain/core/prompts';
+import { OpenAIEmbeddings } from 'langchain/embeddings/openai';
 
-const pineconeApiKey = process.env.PINECONE_API_KEY;
+
 
 export async function callVectorDBQAChain(
   query: string,
@@ -23,15 +22,15 @@ export async function callVectorDBQAChain(
   try {
     const url = process.env.NEXT_PUBLIC_VECTOR_SEARCH_URL as string;
     const vectorSearchResponse = await fetch(url, {
-      method: "POST",
+      method: 'POST',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify(requestBody),
     });
 
     if (!vectorSearchResponse.ok) {
-      throw new Error("Failed to fetch from vector-search");
+      throw new Error('Failed to fetch from vector-search');
     }
 
     const result = await vectorSearchResponse.json();
@@ -43,7 +42,7 @@ export async function callVectorDBQAChain(
 
 export const prompt = ChatPromptTemplate.fromMessages([
   [
-    "system",
+    'system',
     `You are a user's food companion and catering assitant. Always introduce yourself when greeted with  no more than 3 words
      Highfeast is a Nigerian catering company with over 23 years experience, 
      hence how it has rich datasets and information about menus. {input_documents} 
@@ -72,7 +71,7 @@ export const prompt = ChatPromptTemplate.fromMessages([
   
     Final answer:`,
   ],
-  new MessagesPlaceholder("messages"),
+  new MessagesPlaceholder('messages'),
 ]);
 
 export type PineConeMetadata = Record<string, any>;
@@ -84,7 +83,7 @@ export async function similarityVectorSearch(
   indexx: any,
   namespace: string
 ): Promise<Document[]> {
-  const index = pinecone.index("highfeast1");
+  const index = pinecone.index('highfeast1');
   const results = await index.query({
     vector: vectorQuery,
     topK: k,
@@ -103,7 +102,7 @@ export async function similarityVectorSearch(
       }
     }
   }
-  console.log("AI result", result);
+  console.log('AI result', result);
   return result.map((result) => result[0]);
 }
 

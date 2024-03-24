@@ -1,13 +1,13 @@
-import markdownIt from "markdown-it";
-import { createWalletClient, http } from "viem";
-import { privateKeyToAccount } from "viem/accounts";
-import { sepolia } from "viem/chains";
-import siwe from "siwe";
-import { createCanvas, loadImage } from "canvas";
-import htmlToImage from "html-to-image";
-import fs from "fs";
-import sharp from "sharp";
-import { Readable } from "stream";
+import markdownIt from 'markdown-it';
+import { createWalletClient, http } from 'viem';
+import { privateKeyToAccount } from 'viem/accounts';
+import { sepolia } from 'viem/chains';
+import siwe from 'siwe';
+import { createCanvas, loadImage } from 'canvas';
+import htmlToImage from 'html-to-image';
+import fs from 'fs';
+import sharp from 'sharp';
+import { Readable } from 'stream';
 
 export const extractTableData = (htmlString: string) => {
   const menuItems = [];
@@ -17,15 +17,15 @@ export const extractTableData = (htmlString: string) => {
     for (const row of rows) {
       const columns = row.match(/<td[^>]*>.*?<\/td>/gs);
       if (columns && columns.length >= 4) {
-        const item = columns[0].replace(/<\/?[^>]+(>|$)/g, ""); // Removing HTML tags
-        const quantity = columns[1].replace(/<\/?[^>]+(>|$)/g, "");
-        const unitPrice = columns[2].replace(/<\/?[^>]+(>|$)/g, "");
-        const totalPrice = columns[3].replace(/<\/?[^>]+(>|$)/g, "");
+        const item = columns[0].replace(/<\/?[^>]+(>|$)/g, ''); // Removing HTML tags
+        const quantity = columns[1].replace(/<\/?[^>]+(>|$)/g, '');
+        const unitPrice = columns[2].replace(/<\/?[^>]+(>|$)/g, '');
+        const totalPrice = columns[3].replace(/<\/?[^>]+(>|$)/g, '');
         menuItems.push({ item, quantity, unitPrice, totalPrice });
       }
     }
   }
-  return menuItems.filter((menuItem) => menuItem.item !== "TOTAL");
+  return menuItems.filter((menuItem) => menuItem.item !== 'TOTAL');
 };
 export function toHTML(markdownText: string) {
   const md = new markdownIt();
@@ -35,10 +35,10 @@ export function toHTML(markdownText: string) {
 export const exportTable = (name: string) => {
   const table = document.getElementById(name);
   const blob = new Blob([table!.outerHTML], {
-    type: "application/msword",
+    type: 'application/msword',
   });
   const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
+  const a = document.createElement('a');
   a.href = url;
   a.download = `${name}.docx`;
   a.click();
@@ -76,7 +76,7 @@ Benny Flavor,Packet,714 g,,17 g
 `;
 
 export const removePrefix = (response: any) => {
-  const index = response.indexOf(":");
+  const index = response.indexOf(':');
   if (index !== -1) {
     return response.substring(index + 1).trim();
   } else {
@@ -99,17 +99,17 @@ export const getAuthSig = async () => {
   const address = account.address;
 
   // Craft the SIWE message
-  const domain = "localhost";
-  const origin = "https://localhost/login";
+  const domain = 'localhost';
+  const origin = 'https://localhost/login';
   const statement =
-    "This is a test statement. You can put anything you want here.";
+    'This is a test statement. You can put anything you want here.';
 
   const siweMessage = new siwe.SiweMessage({
     domain,
     address: address,
     statement,
     uri: origin,
-    version: "1",
+    version: '1',
     chainId: 1,
     expirationTime: new Date(Date.now() + 60 * 60 * 1000).toISOString(),
   });
@@ -122,7 +122,7 @@ export const getAuthSig = async () => {
 
   const authSig = {
     sig: signature,
-    derivedVia: "web3.eth.personal.sign",
+    derivedVia: 'web3.eth.personal.sign',
     signedMessage: messageToSign,
     address: address,
   };
@@ -161,8 +161,7 @@ export async function textToImage(text: string) {
 
   const dataUrl = await htmlToImage.toPng(htmlContent as any);
 
-  const base64Data = dataUrl.replace(/^data:image\/png;base64,/, "");
+  const base64Data = dataUrl.replace(/^data:image\/png;base64,/, '');
 
-  return Buffer.from(base64Data, "base64");
+  return Buffer.from(base64Data, 'base64');
 }
-

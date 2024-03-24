@@ -14,9 +14,6 @@
 
 //     await litNodeClient.connect();
 
-    
-
-
 //     // const accessControlConditions = [
 //     //   {
 //     //     contractAddress: "0x89b597199dAc806Ceecfc091e56044D34E59985c",
@@ -50,7 +47,7 @@
 //         accessControlConditions,
 //         authSig,
 //         chain: "ethereum",
-//         dataToEncrypt: "This is a secret message", 
+//         dataToEncrypt: "This is a secret message",
 //       },
 //       LitNodeClient
 //     );

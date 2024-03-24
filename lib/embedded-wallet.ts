@@ -1,13 +1,13 @@
-import axios, { AxiosRequestConfig } from "axios";
+import axios, { AxiosRequestConfig } from 'axios';
 
 const PRIVY_APP_ID = process.env.PRIVY_APP_ID;
 const PRIVY_APP_SECRET = process.env.PRIVY_APP_SECRET;
 const PRIVY_API_URL =
-  process.env.PRIVY_API_URL || "https://auth.privy.io/api/v1";
+  process.env.PRIVY_API_URL || 'https://auth.privy.io/api/v1';
 
 const config: AxiosRequestConfig = {
   headers: {
-    "privy-app-id": PRIVY_APP_ID,
+    'privy-app-id': PRIVY_APP_ID,
     Authorization: `Basic ${btoa(`${PRIVY_APP_ID}:${PRIVY_APP_SECRET}`)}`,
   },
 };
@@ -48,7 +48,7 @@ const createEmbeddedWalletForFid = async (
     create_embedded_wallet: true,
     linked_accounts: [
       {
-        type: "farcaster",
+        type: 'farcaster',
         fid: fid,
         owner_address: ownerAddress,
       },
@@ -64,7 +64,7 @@ const createEmbeddedWalletForFid = async (
     const linkedAccounts = response.data.linked_accounts;
     conflictingDid = response.data.id;
     const embeddedWallet = linkedAccounts.find(
-      (account: any) => account.type === "wallet"
+      (account: any) => account.type === 'wallet'
     );
     embeddedWalletAddress = embeddedWallet ? embeddedWallet.address : undefined;
   } catch (e) {
@@ -79,9 +79,9 @@ export const findExistingEmbeddedWalletForDid = async (did: string) => {
     const response = await axios.get(`${PRIVY_API_URL}/users/${did}`, config);
     const linkedAccounts = response.data.linked_accounts;
     const embeddedWallet = linkedAccounts.find(
-      (account: any) => account.type === "wallet"
+      (account: any) => account.type === 'wallet'
     );
-    console.error("we founf something", did, embeddedWallet);
+    console.error('we founf something', did, embeddedWallet);
     return embeddedWallet ? embeddedWallet.address : undefined;
   } catch (error) {
     console.error(error);
@@ -100,7 +100,7 @@ const deleteAndCreateUserWithEmbeddedWallet = async (
     return undefined;
   }
 
-  console.error("we deleted something", did);
+  console.error('we deleted something', did);
   const { address } = await createEmbeddedWalletForFid(fid, ownerAddress);
   return address;
 };

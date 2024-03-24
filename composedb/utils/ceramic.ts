@@ -1,13 +1,13 @@
-import { DID } from "dids";
-import { Ed25519Provider } from "key-did-provider-ed25519";
-import { getResolver as getKeyResolver } from "key-did-resolver";
-import { SHA256 } from "crypto-js";
-import seedrandom from "seedrandom";
-import { removePrefix } from "./utils";
-import { Profile } from "./types";
-import path from "path/posix";
-import fs from "fs";
-import axios from "axios";
+import { DID } from 'dids';
+import { Ed25519Provider } from 'key-did-provider-ed25519';
+import { getResolver as getKeyResolver } from 'key-did-resolver';
+import { SHA256 } from 'crypto-js';
+import seedrandom from 'seedrandom';
+import { removePrefix } from './utils';
+import { Profile } from './types';
+import path from 'path/posix';
+import fs from 'fs';
+import axios from 'axios';
 
 export const createRobotDID = async (
   authorId: string,
@@ -114,10 +114,10 @@ export const createRobotPost = async (
   const uniqueKey = authorId;
   const robotDidParentFilePath = path.join(
     process.cwd(),
-    "composedb/data",
-    "robotdid.txt"
+    'composedb/data',
+    'robotdid.txt'
   );
-  const robotdid = fs.readFileSync(robotDidParentFilePath, "utf8");
+  const robotdid = fs.readFileSync(robotDidParentFilePath, 'utf8');
   if (uniqueKey) {
     try {
       const hashedKey = SHA256(uniqueKey).toString();
@@ -134,7 +134,7 @@ export const createRobotPost = async (
       await staticDid.authenticate();
       compose.setDID(staticDid);
       ceramic.did = staticDid;
-      const url = "http://localhost:3000/api/db-context";
+      const url = 'http://localhost:3000/api/db-context';
 
       axios
         .get(url)

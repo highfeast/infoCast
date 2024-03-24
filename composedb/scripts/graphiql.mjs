@@ -1,4 +1,4 @@
-import { serveEncodedDefinition } from "@composedb/devtools-node";
+import { serveEncodedDefinition } from '@composedb/devtools-node';
 
 /**
  * Runs GraphiQL server to view & query composites.
@@ -6,14 +6,14 @@ import { serveEncodedDefinition } from "@composedb/devtools-node";
 const server = await serveEncodedDefinition({
   ceramicURL: 'http://localhost:7007',
   graphiql: true,
-  path: "./src/__generated__/definition.json",
+  path: './src/__generated__/definition.json',
   port: 5001,
 });
 
 console.log(`Server started on ${server.url}`);
 
-process.on("SIGTERM", () => {
+process.on('SIGTERM', () => {
   server.close(() => {
-    console.log("Server stopped");
+    console.log('Server stopped');
   });
 });

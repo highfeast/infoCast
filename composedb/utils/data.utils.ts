@@ -1,5 +1,5 @@
-import { createRobotDID } from "./ceramic";
-import { Profile } from "./types";
+import { createRobotDID } from './ceramic';
+import { Profile } from './types';
 
 // <{
 //     contextIndex: { edges: { node: { id: string; context: string; authorId: string } }[] };

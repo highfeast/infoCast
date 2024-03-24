@@ -1,32 +1,32 @@
-import fs from "fs";
-import path from "path";
-import axios from "axios";
-import { DIDSession } from "did-session";
-import { ComposeClient } from "@composedb/client";
-import { CeramicClient } from "@ceramicnetwork/http-client";
-import { definition } from "../../../lib/__generated__/definition";
-import { RuntimeCompositeDefinition } from "@composedb/types";
-import { NextResponse } from "next/server";
-import { callVectorDBQAChain } from "../../../lib/LLM";
-import { Pinecone } from "@pinecone-database/pinecone";
-import sharp from "sharp";
-import { removePrefix } from "@/composedb/utils/utils";
-import pinataSDK from "@pinata/sdk";
-import { createRobotPost } from "@/composedb/utils/ceramic";
-import { Readable } from "stream";
-import { FrameRequest } from "@coinbase/onchainkit";
-import { chatFrame, errorFrame, parseRequest } from "@/lib/farcaster";
-import { textToImage } from "@/lib/helpers";
-import { createCanvas, loadImage } from "canvas";
+import fs from 'fs';
+import path from 'path';
+import axios from 'axios';
+import { DIDSession } from 'did-session';
+import { ComposeClient } from '@composedb/client';
+import { CeramicClient } from '@ceramicnetwork/http-client';
+import { definition } from '../../../lib/__generated__/definition';
+import { RuntimeCompositeDefinition } from '@composedb/types';
+import { NextResponse } from 'next/server';
+import { callVectorDBQAChain } from '../../../lib/LLM';
+import { Pinecone } from '@pinecone-database/pinecone';
+import sharp from 'sharp';
+import { removePrefix } from '@/composedb/utils/utils';
+import pinataSDK from '@pinata/sdk';
+import { createRobotPost } from '@/composedb/utils/ceramic';
+import { Readable } from 'stream';
+import { FrameRequest } from '@coinbase/onchainkit';
+import { chatFrame, errorFrame, parseRequest } from '@/lib/farcaster';
+import { textToImage } from '@/lib/helpers';
+import { createCanvas, loadImage } from 'canvas';
 
 const pinata = new pinataSDK({ pinataJWTKey: process.env.PINATA_JWT });
 
 const sessionFilePath = path.join(
   process.cwd(),
-  "composedb/data",
-  "session.json"
+  'composedb/data',
+  'session.json'
 );
-const didParentFilePath = path.join(process.cwd(), "composedb/data", "did.txt");
+const didParentFilePath = path.join(process.cwd(), 'composedb/data', 'did.txt');
 
 export async function POST(req: any, res: any) {
   let frameRequest: FrameRequest | undefined;
@@ -35,13 +35,13 @@ export async function POST(req: any, res: any) {
   try {
     frameRequest = await req.json();
     if (!frameRequest)
-      throw new Error("Could not deserialize request from frame");
+      throw new Error('Could not deserialize request from frame');
   } catch (e) {
     return new NextResponse(errorFrame);
   }
   const payload = await parseRequest(frameRequest);
 
-  const url = "http://localhost:3000/api/history";
+  const url = 'http://localhost:3000/api/history';
 
   await axios
     .get(url)
@@ -49,7 +49,7 @@ export async function POST(req: any, res: any) {
       const x = response.data.messages;
       if (x) {
         const reorderedMessages = x.map((message: any) => {
-          if (message.profile.gender === "male") {
+          if (message.profile.gender === 'male') {
             return { human_message: message.body };
           } else {
             return { ai_message: message.body };
@@ -71,14 +71,14 @@ export async function POST(req: any, res: any) {
   }
 
   let session;
-  const ceramic = new CeramicClient("http://localhost:7007/");
+  const ceramic = new CeramicClient('http://localhost:7007/');
   const compose = new ComposeClient({
-    ceramic: "http://localhost:7007/",
+    ceramic: 'http://localhost:7007/',
     //@ts-ignore
     definition: definition as RuntimeCompositeDefinition,
   });
 
-  const sessionData = fs.readFileSync(sessionFilePath, "utf8");
+  const sessionData = fs.readFileSync(sessionFilePath, 'utf8');
   session = await DIDSession.fromSession(sessionData);
 
   if (session) {
@@ -86,29 +86,29 @@ export async function POST(req: any, res: any) {
     //@ts-ignore
     ceramic.did = session.did;
   } else {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
   const pinecone = new Pinecone({
     apiKey: process.env.PINECONE_API_KEY as string,
   });
-  const pineconeIndex = pinecone.index("highfeast1");
+  const pineconeIndex = pinecone.index('highfeast1');
   const response = await callVectorDBQAChain(
     _prompt,
     await pineconeIndex.describeIndexStats(),
-    "c",
+    'c',
     messages
   );
 
   if (response && response.length > 0) {
     const text = await removePrefix(response);
-    const words = text.split(" ");
+    const words = text.split(' ');
     const wordsPerLine = 8;
     const numLines = Math.ceil(words.length / wordsPerLine);
     const lines = [];
     for (let i = 0; i < numLines; i++) {
       const lineWords = words.slice(i * wordsPerLine, (i + 1) * wordsPerLine);
-      lines.push(lineWords.join(" "));
+      lines.push(lineWords.join(' '));
     }
 
     let svgContent = `
@@ -116,7 +116,7 @@ export async function POST(req: any, res: any) {
     <text x="50%" y="50%" font-size="20" fill="black" text-anchor="middle">`;
 
     lines.forEach((line, index) => {
-      const dy = index === 0 ? "0" : "1.2em"; // Adjust line spacing
+      const dy = index === 0 ? '0' : '1.2em'; // Adjust line spacing
       svgContent += `<tspan x="50%" dy="${dy}">${line}</tspan>`;
     });
 
@@ -126,13 +126,13 @@ export async function POST(req: any, res: any) {
   `;
     const pngBuffer = await sharp(Buffer.from(svgContent)).png().toBuffer();
     const pngStream = Readable.from([pngBuffer]);
-    const authorId = fs.readFileSync(didParentFilePath, "utf8");
+    const authorId = fs.readFileSync(didParentFilePath, 'utf8');
 
     if (pngBuffer) {
       try {
         const { IpfsHash } = await pinata.pinFileToIPFS(pngStream, {
           pinataMetadata: {
-            name: "infocast.png",
+            name: 'infocast.png',
           },
         });
         if (IpfsHash) {
@@ -143,7 +143,7 @@ export async function POST(req: any, res: any) {
             },
             {
               pinataMetadata: {
-                name: "infoCast",
+                name: 'infoCast',
               },
             }
           );
@@ -167,4 +167,4 @@ export async function POST(req: any, res: any) {
   }
 }
 
-export const dynamic = "force-dynamic";
+export const dynamic = 'force-dynamic';
