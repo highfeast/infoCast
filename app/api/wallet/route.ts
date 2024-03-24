@@ -2,7 +2,6 @@ import {
   errorFrame,
   parseFrameRequest,
   getOwnerAddressFromFid,
-  successFrame,
   createWalletFrame,
   chatFrame,
 } from '@/lib/farcaster';
