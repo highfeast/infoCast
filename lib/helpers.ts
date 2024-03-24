@@ -1,4 +1,13 @@
 import markdownIt from "markdown-it";
+import { createWalletClient, http } from "viem";
+import { privateKeyToAccount } from "viem/accounts";
+import { sepolia } from "viem/chains";
+import siwe from "siwe";
+import { createCanvas, loadImage } from "canvas";
+import htmlToImage from "html-to-image";
+import fs from "fs";
+import sharp from "sharp";
+import { Readable } from "stream";
 
 export const extractTableData = (htmlString: string) => {
   const menuItems = [];
@@ -66,12 +75,94 @@ Chicken Maggi,Packet,400 g,,4 g
 Benny Flavor,Packet,714 g,,17 g
 `;
 
-
 export const removePrefix = (response: any) => {
-  const index = response.indexOf(':');
+  const index = response.indexOf(":");
   if (index !== -1) {
     return response.substring(index + 1).trim();
   } else {
     return response.trim();
   }
+};
+
+export const getAuthSig = async () => {
+  // Put your private key into this env var
+  const account = privateKeyToAccount(
+    `0x${process.env.NFT_WALLET_PRIVATE_KEY}`
+  );
+
+  const walletClient = createWalletClient({
+    chain: sepolia,
+    transport: http(),
+    account: account,
+  });
+  // Get the wallet address
+  const address = account.address;
+
+  // Craft the SIWE message
+  const domain = "localhost";
+  const origin = "https://localhost/login";
+  const statement =
+    "This is a test statement. You can put anything you want here.";
+
+  const siweMessage = new siwe.SiweMessage({
+    domain,
+    address: address,
+    statement,
+    uri: origin,
+    version: "1",
+    chainId: 1,
+    expirationTime: new Date(Date.now() + 60 * 60 * 1000).toISOString(),
+  });
+
+  const messageToSign = siweMessage.prepareMessage();
+
+  const signature = await walletClient.signMessage({
+    message: messageToSign,
+  });
+
+  const authSig = {
+    sig: signature,
+    derivedVia: "web3.eth.personal.sign",
+    signedMessage: messageToSign,
+    address: address,
+  };
+
+  return authSig;
+};
+export async function textToImage(text: string) {
+  const htmlContent = `
+      <!DOCTYPE html>
+      <html lang="en">
+      <head>
+          <meta charset="UTF-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>Text Bubble</title>
+          <style>
+              body {
+                  font-family: Arial, sans-serif;
+                  background-color: transparent;
+                  padding: 20px;
+              }
+              .text-bubble {
+                  background-color: #f0f0f0;
+                  border-radius: 20px;
+                  padding: 20px;
+                  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+                  max-width: 400px;
+                  margin: 0 auto;
+              }
+          </style>
+      </head>
+      <body>
+          <div class="text-bubble">${text}</div>
+      </body>
+      </html>
+  `;
+
+  const dataUrl = await htmlToImage.toPng(htmlContent as any);
+
+  const base64Data = dataUrl.replace(/^data:image\/png;base64,/, "");
+
+  return Buffer.from(base64Data, "base64");
 }
+

@@ -7,7 +7,7 @@ import { ComposeClient } from "@composedb/client";
 import { CeramicClient } from "@ceramicnetwork/http-client";
 import { definition } from "../../../lib/__generated__/definition";
 import { RuntimeCompositeDefinition } from "@composedb/types";
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 
 const sessionFilePath = path.join(
   process.cwd(),
@@ -19,8 +19,6 @@ export async function POST(req: any, res: any) {
   if (req.method !== "POST") {
     return NextResponse.json({ error: "Method not alloweed" }, { status: 405 });
   }
-
-  console.log("1111");
 
   try {
     const ceramic = new CeramicClient("http://localhost:7007/");

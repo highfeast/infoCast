@@ -1,22 +1,8 @@
-import {
-  errorFrame,
-  parseFrameRequest,
-  getOwnerAddressFromFid,
-  successFrame,
-  chatFrame,
-} from "@/lib/farcaster";
+import { errorFrame, parseFrameRequest, chatFrame } from "@/lib/farcaster";
 import { FrameRequest } from "@coinbase/onchainkit";
 import { NextRequest, NextResponse } from "next/server";
-import { airdropTo } from "@/lib/nft";
-// import { testAirDrop } from "@/lib/NFTRPC";
-import svg2img from "svg2img";
-import fs from "fs";
-import sharp from "sharp";
-import pinataSDK from "@pinata/sdk";
 import stream from "stream";
 import chatNFTClient from "../../../../lib/NFTRPC";
-
-const pinata = new pinataSDK({ pinataJWTKey: process.env.PINATA_JWT });
 
 export async function POST(req: NextRequest): Promise<Response> {
   let frameRequest: FrameRequest | undefined;
@@ -53,8 +39,7 @@ export async function POST(req: NextRequest): Promise<Response> {
   svgStream.push(svgContent);
   svgStream.push(null);
 
-  const welcomeImage = `${process.env.NEXT_PUBLIC_GATEWAY}/ipfs/QmWknFN2GzpwXG3ASknvYZCMTcEJVwf1t3AxyEC6YLn6o5`; //  ?pinataGatewayToken=${process.env.NEXT_PUBLIC_PINATA_TOKEN}` as unknown as number;
-
+  const welcomeImage = `${process.env.NEXT_PUBLIC_GATEWAY}/ipfs/QmWknFN2GzpwXG3ASknvYZCMTcEJVwf1t3AxyEC6YLn6o5`;
   return new NextResponse(chatFrame(welcomeImage as any));
 }
 

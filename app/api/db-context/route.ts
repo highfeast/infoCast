@@ -171,8 +171,6 @@ export async function POST(req: any, res: any) {
       return handleError(res, followSelfResult.errors);
     }
 
-    console.log("Followed self.");
-
     const robotDID = await createRobotDID(authorId, ceramic, compose);
 
     if (robotDID) {

@@ -1,6 +1,4 @@
 import axios, { AxiosRequestConfig } from "axios";
-import { NextResponse } from "next/server";
-
 
 const PRIVY_APP_ID = process.env.PRIVY_APP_ID;
 const PRIVY_APP_SECRET = process.env.PRIVY_APP_SECRET;
@@ -24,10 +22,8 @@ export const createOrFindEmbeddedWalletForFid = async (
   );
   if (address) return address;
 
-  // If no conflicting DID was found for the user, it is an unrecoverable error
   if (!conflictingDid) return undefined;
 
-  // If a conflicting DID was found, check if they have an embedded wallet already
   const existingAddress = await findExistingEmbeddedWalletForDid(
     conflictingDid
   );
@@ -101,12 +97,10 @@ const deleteAndCreateUserWithEmbeddedWallet = async (
   try {
     await axios.delete(`${PRIVY_API_URL}/users/${did}`, config);
   } catch (error) {
-    // Unable to delete user
     return undefined;
   }
 
   console.error("we deleted something", did);
-  // Will not try to delete again
   const { address } = await createEmbeddedWalletForFid(fid, ownerAddress);
   return address;
 };

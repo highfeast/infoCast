@@ -40,7 +40,7 @@ export async function POST(req: NextRequest): Promise<Response> {
   const _chatNFTClient = new chatNFTClient();
 
   const tx = await _chatNFTClient.getUserConversationId(embeddedWalletAddress);
-  console.log(tx);
+  // console.log(tx);
   if (tx !== "0x") {
     const welcomeImage = `${process.env.NEXT_PUBLIC_GATEWAY}/ipfs/QmWknFN2GzpwXG3ASknvYZCMTcEJVwf1t3AxyEC6YLn6o5`;
     return new NextResponse(chatFrame(welcomeImage as any));

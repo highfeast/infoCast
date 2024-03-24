@@ -16,6 +16,8 @@ import { createRobotPost } from "@/composedb/utils/ceramic";
 import { Readable } from "stream";
 import { FrameRequest } from "@coinbase/onchainkit";
 import { chatFrame, errorFrame, parseRequest } from "@/lib/farcaster";
+import { textToImage } from "@/lib/helpers";
+import { createCanvas, loadImage } from "canvas";
 
 const pinata = new pinataSDK({ pinataJWTKey: process.env.PINATA_JWT });
 
@@ -29,6 +31,7 @@ const didParentFilePath = path.join(process.cwd(), "composedb/data", "did.txt");
 export async function POST(req: any, res: any) {
   let frameRequest: FrameRequest | undefined;
   let messages: any = [];
+
   try {
     frameRequest = await req.json();
     if (!frameRequest)
@@ -78,7 +81,6 @@ export async function POST(req: any, res: any) {
   const sessionData = fs.readFileSync(sessionFilePath, "utf8");
   session = await DIDSession.fromSession(sessionData);
 
-
   if (session) {
     compose.setDID(session.did as any);
     //@ts-ignore
@@ -99,22 +101,33 @@ export async function POST(req: any, res: any) {
   );
 
   if (response && response.length > 0) {
-    const ntext = await removePrefix(response);
-    const svgContent = `
-      <svg xmlns="http://www.w3.org/2000/svg" width="400" height="200">
-    <foreignObject width="100%" height="100%">
-        <div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: center; justify-content: center; width: 100%; height: 100%;">
-            <div style="font-size: 20px; color: black; text-align: center; word-wrap: break-word;">
-                ${ntext}
-            </div>
-        </div>
-    </foreignObject>
-</svg>
+    const text = await removePrefix(response);
+    const words = text.split(" ");
+    const wordsPerLine = 8;
+    const numLines = Math.ceil(words.length / wordsPerLine);
+    const lines = [];
+    for (let i = 0; i < numLines; i++) {
+      const lineWords = words.slice(i * wordsPerLine, (i + 1) * wordsPerLine);
+      lines.push(lineWords.join(" "));
+    }
 
-    `;
+    let svgContent = `
+  <svg xmlns="http://www.w3.org/2000/svg" width="400" height="200">
+    <text x="50%" y="50%" font-size="20" fill="black" text-anchor="middle">`;
+
+    lines.forEach((line, index) => {
+      const dy = index === 0 ? "0" : "1.2em"; // Adjust line spacing
+      svgContent += `<tspan x="50%" dy="${dy}">${line}</tspan>`;
+    });
+
+    svgContent += `
+    </text>
+  </svg>
+  `;
     const pngBuffer = await sharp(Buffer.from(svgContent)).png().toBuffer();
     const pngStream = Readable.from([pngBuffer]);
     const authorId = fs.readFileSync(didParentFilePath, "utf8");
+
     if (pngBuffer) {
       try {
         const { IpfsHash } = await pinata.pinFileToIPFS(pngStream, {

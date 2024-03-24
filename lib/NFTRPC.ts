@@ -4,10 +4,8 @@ import {
   http,
   encodeFunctionData,
   getAddress,
-  Transaction,
-  TransactionRequest,
 } from "viem";
-import { mnemonicToAccount, privateKeyToAccount } from "viem/accounts";
+import { privateKeyToAccount } from "viem/accounts";
 import type { Account } from "viem/accounts";
 import CHAT_NFT_ABI from "./abi.json";
 import { sepolia } from "viem/chains";
