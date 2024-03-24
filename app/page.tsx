@@ -9,6 +9,10 @@ const frameMetadata = getFrameMetadata({
   post_url: `${FRAME_BASE_URL}/api/wallet`,
 });
 
+
+const  campanyName = ''
+
+
 export const metadata: Metadata = {
   title: "InfoCast Frames",
   description: "InfoCast Frame",

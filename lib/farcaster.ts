@@ -13,9 +13,9 @@ const image1 = "";
 //create images for our frames (using privy's image as placeholder)
 export enum FrameImageUrls {
   START = `${process.env.NEXT_PUBLIC_GATEWAY}/ipfs/QmcgTSkKvCWPbv1V2qxmzbwrR1G7i238wkUxg7TiE2FfAb?pinataGatewayToken=${process.env.NEXT_PUBLIC_PINATA_TOKEN}` as unknown as number,
-  WALLET = "https://privy-frames-demo.vercel.app/wallet.png",
+  WALLET = `${process.env.NEXT_PUBLIC_GATEWAY}/ipfs/QmTawbdS3wD3JrMqrWykFCDaCFrHRn2ZrYxa61m3f2KVdE?pinataGatewayToken=${process.env.NEXT_PUBLIC_PINATA_TOKEN}` as unknown as number,
   SUCCESS = "https://privy-frames-demo.vercel.app/success.png",
-  ERROR = "https://privy-frames-demo.vercel.app/error.png",
+  ERROR = `${process.env.NEXT_PUBLIC_GATEWAY}/ipfs/QmTxGNw3wd5bB7NneWoshQNj44fLTtq1f5NfAEV6tXKMhR?pinataGatewayToken=${process.env.NEXT_PUBLIC_PINATA_TOKEN}` as unknown as number,
 }
 
 export const createFrame = (
@@ -51,7 +51,7 @@ export const createFrame = (
 
 export const createWalletFrame = (address: string) => {
   return createFrame(
-    FrameImageUrls.WALLET,
+    FrameImageUrls.WALLET as any,
     "Mint a Chat",
     `api/mint/${address}`
   );
@@ -67,7 +67,7 @@ export const successFrame = createFrame(
   true
 );
 export const errorFrame = createFrame(
-  FrameImageUrls.ERROR,
+  FrameImageUrls.ERROR as any,
   "Try again?",
   "api/wallet"
 );
