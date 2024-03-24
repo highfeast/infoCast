@@ -9,7 +9,6 @@ const ID_REGISTRY_CONTRACT_ADDRESS: `0x${string}` =
 const ZERO_ADDRESS: `0x${string}` =
   "0x0000000000000000000000000000000000000000";
 const HUB_URL = "nemes.farcaster.xyz:2283";
-const image1 = "";
 //create images for our frames (using privy's image as placeholder)
 export enum FrameImageUrls {
   START = `${process.env.NEXT_PUBLIC_GATEWAY}/ipfs/QmYBJEAAssoT61Ydatx64zwYGsT1aW2SmJbbky2fnzLBsG` as unknown as number,
@@ -29,13 +28,12 @@ export const createFrame = (
         <!DOCTYPE html>
         <html>
             <head>
+            <meta property="of:accepts:xmtp"	content="2024-02-01"/>
             <meta name="fc:frame" content="vNext">
             <meta name="fc:frame:image" content="${imageUrl}">
-            <meta name="fc:frame:post_url" content="${FRAME_BASE_URL}/${apiPath}">
-            ${isChat && "<meta name='fc:frame:button:1', content='⬅️'>"}
-            ${isChat && "<meta name='fc:frame:button:2', content='➡️'>"}
+            <meta name="fc:frame:post_url" content="${FRAME_BASE_URL}/${apiPath}">           
             <meta name="fc:frame:button:${
-              isChat ? "3" : "1"
+              isChat ? "1" : "1"
             }" content="${buttonText}">
             ${
               isChat &&
@@ -58,7 +56,7 @@ export const createWalletFrame = (address: string) => {
 };
 
 export const chatFrame = (image: string) =>
-  createFrame(image, "Send", "api/done", true, true);
+  createFrame(image, "Send", `api/chat`, true, true);
 
 export const successFrame = createFrame(
   FrameImageUrls.SUCCESS,
@@ -92,6 +90,26 @@ export const parseFrameRequest = async (request: FrameRequest) => {
   }
 
   return { fid: fid, isValid: isValid };
+};
+
+export const parseRequest = async (request: FrameRequest) => {
+  const hub = getSSLHubRpcClient(HUB_URL);
+  let data: any | undefined;
+  let isValid: boolean = true;
+  try {
+    const decodedMessage = Message.decode(
+      Buffer.from(request.trustedData.messageBytes, "hex")
+    );
+    const result = await hub.validateMessage(decodedMessage);
+    if (!result.isOk() || !result.value.valid || !result.value.message) {
+      isValid = false;
+    } else {
+      data = result.value.message.data;
+    }
+  } catch (error) {
+    console.error(error);
+  }
+  return data;
 };
 
 export const getOwnerAddressFromFid = async (fid: number) => {

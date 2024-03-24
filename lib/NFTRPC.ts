@@ -11,8 +11,15 @@ import { mnemonicToAccount, privateKeyToAccount } from "viem/accounts";
 import type { Account } from "viem/accounts";
 import CHAT_NFT_ABI from "./abi.json";
 import { sepolia } from "viem/chains";
+import { NextResponse } from "next/server";
+import { errorFrame } from "./farcaster";
 
-class ChatNFTClient {
+export default class ChatNFTClient {
+  static mintAndAssignConversationId(
+    recipient: any
+  ): Response | PromiseLike<Response> {
+    throw new Error("Method not implemented.");
+  }
   private account: Account | null = null;
   private walletClient: ReturnType<typeof createWalletClient> | null = null;
   private publicClient: ReturnType<typeof createPublicClient> | null = null;
@@ -28,7 +35,7 @@ class ChatNFTClient {
     });
 
     this.account = privateKeyToAccount(
-      getAddress(process.env.NFT_WALLET_PRIVATE_KEY as string)
+      `0x${process.env.NFT_WALLET_PRIVATE_KEY}`
     );
 
     this.walletClient = createWalletClient({
@@ -39,10 +46,10 @@ class ChatNFTClient {
   }
 
   public async mintAndAssignConversationId(userAddress: string) {
+    await this.init();
     if (!this.walletClient) {
       throw new Error("Wallet client not initialized");
     }
-
     const mintData = encodeFunctionData({
       abi: CHAT_NFT_ABI,
       functionName: "mintAndAssignConversationId",
@@ -55,11 +62,11 @@ class ChatNFTClient {
       account: this.account!,
       chain: sepolia,
     });
-
-    console.log("Transaction hash:", tx.hash);
-    const receipt = await tx.wait();
+    console.log("Transaction hash:", tx);
+    if (!tx) {
+      return new NextResponse(errorFrame);
+    }
     return tx;
-    console.log("Transaction receipt:", receipt);
   }
 
   public async getUserConversationId(userAddress: string) {
@@ -81,15 +88,5 @@ class ChatNFTClient {
     });
 
     return conversationId;
-  }
-}
-
-export async function testAirDrop(recipient: string) {
-  try {
-    const chatNFTClient = new ChatNFTClient();
-    return await chatNFTClient.mintAndAssignConversationId(recipient);
-  } catch (error) {
-    console.error(error);
-    return undefined;
   }
 }

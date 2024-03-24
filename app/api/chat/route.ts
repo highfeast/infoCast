@@ -6,17 +6,16 @@ import { ComposeClient } from "@composedb/client";
 import { CeramicClient } from "@ceramicnetwork/http-client";
 import { definition } from "../../../lib/__generated__/definition";
 import { RuntimeCompositeDefinition } from "@composedb/types";
-import { PostProps } from "../../../composedb/utils/types";
-import { GetRecentMessagesQuery } from "../../../composedb/utils/data.utils";
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { callVectorDBQAChain } from "../../../lib/LLM";
 import { Pinecone } from "@pinecone-database/pinecone";
-import stream from "stream";
 import sharp from "sharp";
 import { removePrefix } from "@/composedb/utils/utils";
 import pinataSDK from "@pinata/sdk";
 import { createRobotPost } from "@/composedb/utils/ceramic";
 import { Readable } from "stream";
+import { FrameRequest } from "@coinbase/onchainkit";
+import { chatFrame, errorFrame, parseRequest } from "@/lib/farcaster";
 
 const pinata = new pinataSDK({ pinataJWTKey: process.env.PINATA_JWT });
 
@@ -26,56 +25,21 @@ const sessionFilePath = path.join(
   "session.json"
 );
 const didParentFilePath = path.join(process.cwd(), "composedb/data", "did.txt");
-const robotDidParentFilePath = path.join(
-  process.cwd(),
-  "composedb/data",
-  "robotdid.txt"
-);
-const ContextUrl = "http://localhost:3000/api/db-context";
 
 export async function POST(req: any, res: any) {
-  let session;
-  const ceramic = new CeramicClient("http://localhost:7007/");
-  const compose = new ComposeClient({
-    ceramic: "http://localhost:7007/",
-    //@ts-ignore
-    definition: definition as RuntimeCompositeDefinition,
-  });
-
-  const sessionData = fs.readFileSync(sessionFilePath, "utf8");
-
-  // console.log(sessionData);
-  session = await DIDSession.fromSession(sessionData);
-  // console.log(sessionData);
-
-  if (session) {
-    compose.setDID(session.did as any);
-    //@ts-ignore
-    ceramic.did = session.did;
-  } else {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-
-  const pinecone = new Pinecone({
-    apiKey: process.env.PINECONE_API_KEY as string,
-  });
-
-  //find a way to package the messages in an acceptable form
-  const { prompt } = await req.json();
-
-  if (!prompt) {
-    return NextResponse.json(
-      { message: "mrompt format erro" },
-      { status: 500 }
-    );
-  }
-
+  let frameRequest: FrameRequest | undefined;
   let messages: any = [];
+  try {
+    frameRequest = await req.json();
+    if (!frameRequest)
+      throw new Error("Could not deserialize request from frame");
+  } catch (e) {
+    return new NextResponse(errorFrame);
+  }
+  const payload = await parseRequest(frameRequest);
 
-  const pineconeIndex = pinecone.index("highfeast1");
+  const url = "http://localhost:3000/api/history";
 
-  //query message history
-  const url = "http://localhost:3000/api/message";
   await axios
     .get(url)
     .then(function (response) {
@@ -95,8 +59,40 @@ export async function POST(req: any, res: any) {
       console.error(error);
     });
 
+  // const pageLength = messages.length;
+
+  const _prompt = payload.frameActionBody.inputText.toString();
+
+  if (!_prompt || (_prompt && _prompt.length < 1)) {
+    return new NextResponse(errorFrame);
+  }
+
+  let session;
+  const ceramic = new CeramicClient("http://localhost:7007/");
+  const compose = new ComposeClient({
+    ceramic: "http://localhost:7007/",
+    //@ts-ignore
+    definition: definition as RuntimeCompositeDefinition,
+  });
+
+  const sessionData = fs.readFileSync(sessionFilePath, "utf8");
+  session = await DIDSession.fromSession(sessionData);
+
+
+  if (session) {
+    compose.setDID(session.did as any);
+    //@ts-ignore
+    ceramic.did = session.did;
+  } else {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  const pinecone = new Pinecone({
+    apiKey: process.env.PINECONE_API_KEY as string,
+  });
+  const pineconeIndex = pinecone.index("highfeast1");
   const response = await callVectorDBQAChain(
-    prompt,
+    _prompt,
     await pineconeIndex.describeIndexStats(),
     "c",
     messages
@@ -105,14 +101,19 @@ export async function POST(req: any, res: any) {
   if (response && response.length > 0) {
     const ntext = await removePrefix(response);
     const svgContent = `
-        <svg xmlns="http://www.w3.org/2000/svg" width="400" height="200">
-            <rect width="400" height="200" fill="white"/>
-            <text x="50%" y="50%" font-size="20" fill="black" text-anchor="middle">${ntext}</text>
-        </svg>
+      <svg xmlns="http://www.w3.org/2000/svg" width="400" height="200">
+    <foreignObject width="100%" height="100%">
+        <div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: center; justify-content: center; width: 100%; height: 100%;">
+            <div style="font-size: 20px; color: black; text-align: center; word-wrap: break-word;">
+                ${ntext}
+            </div>
+        </div>
+    </foreignObject>
+</svg>
+
     `;
     const pngBuffer = await sharp(Buffer.from(svgContent)).png().toBuffer();
     const pngStream = Readable.from([pngBuffer]);
-
     const authorId = fs.readFileSync(didParentFilePath, "utf8");
     if (pngBuffer) {
       try {
@@ -141,14 +142,16 @@ export async function POST(req: any, res: any) {
             _message.IpfsHash
           );
           console.log(robotPost);
-
-          return NextResponse.json(_message.IpfsHash, { status: 200 });
+          return new NextResponse(
+            chatFrame(`${process.env.NEXT_PUBLIC_GATEWAY}/ipfs/${IpfsHash}`)
+          );
         }
       } catch (e) {
         console.log(e);
       }
     }
-
     return NextResponse.json(response, { status: 200 });
   }
 }
+
+export const dynamic = "force-dynamic";
