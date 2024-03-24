@@ -1,29 +1,37 @@
-
 export async function fetcher<JSON = any>(
   input: RequestInfo,
   init?: RequestInit
 ): Promise<JSON> {
-  const res = await fetch(input, init)
+  const res = await fetch(input, init);
   if (!res.ok) {
-    const json = await res.json()
+    const json = await res.json();
     if (json.error) {
       const error = new Error(json.error) as Error & {
-        status: number
-      }
-      error.status = res.status
-      throw error
+        status: number;
+      };
+      error.status = res.status;
+      throw error;
     } else {
-      throw new Error('An unexpected error occurred')
+      throw new Error("An unexpected error occurred");
     }
   }
-  return res.json()
+  return res.json();
 }
 
 export function formatDate(input: string | number | Date): string {
-  const date = new Date(input)
-  return date.toLocaleDateString('en-US', {
-    month: 'long',
-    day: 'numeric',
-    year: 'numeric'
-  })
+  const date = new Date(input);
+  return date.toLocaleDateString("en-US", {
+    month: "long",
+    day: "numeric",
+    year: "numeric",
+  });
 }
+
+export const removePrefix = (response: any) => {
+  const index = response.indexOf(":");
+  if (index !== -1) {
+    return response.substring(index + 1).trim();
+  } else {
+    return response.trim();
+  }
+};

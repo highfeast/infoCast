@@ -12,10 +12,10 @@ const HUB_URL = "nemes.farcaster.xyz:2283";
 const image1 = "";
 //create images for our frames (using privy's image as placeholder)
 export enum FrameImageUrls {
-  START = `${process.env.NEXT_PUBLIC_GATEWAY}/ipfs/QmcgTSkKvCWPbv1V2qxmzbwrR1G7i238wkUxg7TiE2FfAb?pinataGatewayToken=${process.env.NEXT_PUBLIC_PINATA_TOKEN}` as unknown as number,
-  WALLET = `${process.env.NEXT_PUBLIC_GATEWAY}/ipfs/QmTawbdS3wD3JrMqrWykFCDaCFrHRn2ZrYxa61m3f2KVdE?pinataGatewayToken=${process.env.NEXT_PUBLIC_PINATA_TOKEN}` as unknown as number,
+  START = `${process.env.NEXT_PUBLIC_GATEWAY}/ipfs/QmYBJEAAssoT61Ydatx64zwYGsT1aW2SmJbbky2fnzLBsG` as unknown as number,
+  WALLET = `${process.env.NEXT_PUBLIC_GATEWAY}/ipfs/QmTawbdS3wD3JrMqrWykFCDaCFrHRn2ZrYxa61m3f2KVdE` as unknown as number,
   SUCCESS = "https://privy-frames-demo.vercel.app/success.png",
-  ERROR = `${process.env.NEXT_PUBLIC_GATEWAY}/ipfs/QmTxGNw3wd5bB7NneWoshQNj44fLTtq1f5NfAEV6tXKMhR?pinataGatewayToken=${process.env.NEXT_PUBLIC_PINATA_TOKEN}` as unknown as number,
+  ERROR = `${process.env.NEXT_PUBLIC_GATEWAY}/ipfs/QmTxGNw3wd5bB7NneWoshQNj44fLTtq1f5NfAEV6tXKMhR` as unknown as number,
 }
 
 export const createFrame = (

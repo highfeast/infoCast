@@ -69,7 +69,7 @@ export async function POST(req: NextRequest): Promise<Response> {
   // }
 
   const welcomeImage =
-    `${process.env.NEXT_PUBLIC_GATEWAY}/ipfs/QmWknFN2GzpwXG3ASknvYZCMTcEJVwf1t3AxyEC6YLn6o5?pinataGatewayToken=${process.env.NEXT_PUBLIC_PINATA_TOKEN}` as unknown as number;
+    `${process.env.NEXT_PUBLIC_GATEWAY}/ipfs/QmWknFN2GzpwXG3ASknvYZCMTcEJVwf1t3AxyEC6YLn6o5` //  ?pinataGatewayToken=${process.env.NEXT_PUBLIC_PINATA_TOKEN}` as unknown as number;
 
   return new NextResponse(chatFrame(welcomeImage as any));
 }

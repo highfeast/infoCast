@@ -46,8 +46,15 @@ export async function POST(req: any, res: any) {
     const messages = body.messages;
 
     if (messages.length > 0) {
+      messages.forEach((message: any, index: number) => {
+          if ("human_message" in message) {
+            mappedMessages.push(new HumanMessage(message.human_message));
+          }
+          if ("ai_message" in message) {
+            mappedMessages.push(new AIMessage(message.ai_message));
+          }
+      });
     }
-
     mappedMessages.push(new HumanMessage(body.query));
 
     const chain = prompt.pipe(llm);
@@ -58,7 +65,6 @@ export async function POST(req: any, res: any) {
       userPrompt: body.query,
     });
 
-    console.log("result:", result);
     if (result && result.length > 0) {
       return NextResponse.json(result, { status: 200 });
     }
