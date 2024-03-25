@@ -17,7 +17,6 @@ import { Readable } from 'stream';
 import { FrameRequest } from '@coinbase/onchainkit';
 import { chatFrame, errorFrame, parseRequest } from '@/lib/farcaster';
 
-
 const pinata = new pinataSDK({ pinataJWTKey: process.env.PINATA_JWT });
 
 const sessionFilePath = path.join(
@@ -58,10 +57,8 @@ export async function POST(req: any, res: any) {
       }
     })
     .catch(function (error) {
-      console.error(error);
+      return new NextResponse(errorFrame);
     });
-
-  // const pageLength = messages.length;
 
   const _prompt = payload.frameActionBody.inputText.toString();
 
@@ -85,7 +82,8 @@ export async function POST(req: any, res: any) {
     //@ts-ignore
     ceramic.did = session.did;
   } else {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    // NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    return new NextResponse(errorFrame);
   }
 
   const pinecone = new Pinecone({

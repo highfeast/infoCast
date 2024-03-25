@@ -3,7 +3,6 @@ import { createWalletClient, http } from 'viem';
 import { privateKeyToAccount } from 'viem/accounts';
 import { sepolia } from 'viem/chains';
 import siwe from 'siwe';
-import htmlToImage from 'html-to-image';
 import { PineConeMetadata } from './LLM';
 
 export const extractTableData = (htmlString: string) => {
@@ -96,8 +95,8 @@ export const getAuthSig = async () => {
   const address = account.address;
 
   // Craft the SIWE message
-  const domain = 'localhost';
-  const origin = 'https://localhost/login';
+  const domain = process.env.NEXT_PUBLIC_BASE_URL;
+  const origin = `${process.env.NEXT_PUBLIC_BASE_URL}/`;
   const statement =
     'This is a test statement. You can put anything you want here.';
 

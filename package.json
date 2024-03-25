@@ -1,6 +1,6 @@
 {
-  "name": "frame-tutorial",
-  "version": "0.1.0",
+  "name": "infocast",
+  "version": "0.0.0",
   "private": true,
   "scripts": {
     "generate": "node composedb/scripts/commands.mjs",
