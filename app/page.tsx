@@ -1,4 +1,4 @@
-import { getFrameMessage, getFrameMetadata } from '@coinbase/onchainkit';
+import { getFrameMetadata } from '@coinbase/onchainkit';
 import type { Metadata } from 'next';
 import { FrameImageUrls, FRAME_BASE_URL } from '../lib/farcaster';
 import RedirectToDemo from '@/components/redirect';
@@ -9,7 +9,6 @@ const frameMetadata = getFrameMetadata({
   post_url: `${FRAME_BASE_URL}/api/wallet`,
 });
 
-const campanyName = '';
 
 export const metadata: Metadata = {
   title: 'InfoCast Frames',
@@ -27,7 +26,7 @@ export const metadata: Metadata = {
 export default function Page() {
   return (
     <>
-      <h1>Privy Frames</h1>
+      <h1>Info Cast</h1>
       <RedirectToDemo />
     </>
   );
